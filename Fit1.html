@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Formulardaten in LocalStorage speichern</title>
+
+<!-- Eingefügt MB -->
+<style>
+	
+	#reset {
+		border-radius: 12px;
+		border: none;
+		color: white;
+		padding: 0.5em 0.5em;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 1.2em;
+	}
+	
+	
+	.fit1 {
+		background-color: rgba(73, 92, 13, 0.2);	
+		padding: 15px;
+	}
+	.fit1 h1 {
+		color:rgba(73, 92, 13, 1);
+		text-shadow: 1px 1px 2px #2B2B2B;
+	}
+	.fit1 #reset {
+		background-color: rgba(73, 92, 13, 1)
+	}
+		
+</style>
+
+
+</head>
+
+<body>
+<div class="fit1">
+<!-- Fehlermeldung wenn kein LocalStorage möglich -->
+<div id="result"></div>
+<h1>Daten speichern</h1>
+<p>
+  <input name="checkbox1" type="checkbox" id="checkbox1" onchange="handleChange(this);">
+  Checkbox1
+</p>
+<p>
+  <input name="checkbox2" type="checkbox" id="checkbox2" onchange="handleChange(this);">
+  Checkbox2</p>
+<p>
+  <input name="checkbox3" type="checkbox" id="checkbox3" onchange="handleChange(this);">
+  Checkbox3</p>
+
+
+<p align="center"><input type="button" id="reset" onClick="reset()" value="Formular zurücksetzen"></p>
+</div>
+</body>
+
+<script>
+
+// jedem Formular wird eine einzigartige ID zugewiesen. 
+// Wichtig damit sie im localStorage unterschieden werden können
+var formularid = "fit1";
+
+// Wenn DOM geladen, dann Checkboxen auf den richtigen Wert setzten
+document.addEventListener( 'DOMContentLoaded', function () {
+    setValue();
+}, false );
+
+
+// Browser Unterstützung überprüfen
+if (typeof(Storage) !== "undefined") {
+	// Wenn localStorage Objekt noch nicht existier anlegen
+	if (localStorage.getItem(formularid) === null) {
+		var text = '{}';
+    	localStorage.setItem(formularid, text);	  
+	}
+} else {
+    document.getElementById("result").innerHTML = "Leider unterstützt ihr Browser keinen Web Storage. Deswegen können die Formulardaten nicht gespeichert werden.";
+}
+
+function handleChange(cb) {
+	var id = cb.id; // Id des Formulars
+	// aus Local Storage auslesen und Text in JSON verwandeln
+	var formularWerte = JSON.parse(localStorage.getItem(formularid));
+	
+
+	if(cb.checked == true) {
+		formularWerte[id] = "1";
+		var string = JSON.stringify(formularWerte);
+		localStorage.setItem(formularid, string);
+		}
+	else {
+		formularWerte[id] = "0";
+		var string = JSON.stringify(formularWerte);
+		localStorage.setItem(formularid, string);
+	}
+	
+}
+
+// gespeicherte Werte löschen und Formular zurücksetzten
+function reset() {
+	var text = '{}';
+	localStorage.setItem(formularid, text);	
+	location.reload();
+}
+
+// Checkboxes anhand des LocalStorage ausgeben
+function setValue(){
+	var formularWerte = JSON.parse(localStorage.getItem(formularid));
+	for (checkbox in formularWerte) {
+		if (formularWerte[checkbox] == "1"){
+			document.getElementById(checkbox).checked = true;
+		}
+		else {document.getElementById(checkbox).checked = false;}
+	}
+}
+</script>
+
+</html>
